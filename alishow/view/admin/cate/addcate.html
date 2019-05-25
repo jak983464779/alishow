@@ -1,0 +1,59 @@
+{{extend '../layouts/layout.html'}}
+
+{{block 'body'}}
+<div class="container-fluid">
+  <div class="page-title">
+    <h1>添加栏目</h1>
+  </div>
+  <!-- 有错误信息时展示 -->
+  <!-- <div class="alert alert-danger">
+      <strong>错误！</strong>发生XXX错误
+    </div> -->
+  <div class="row">
+    <div class="col-md-4">
+      <form>
+        <h2>添加新栏目</h2>
+        <div class="form-group">
+          <label for="name">名称</label>
+          <input id="name" class="form-control" name="name" type="text" placeholder="分类名称">
+        </div>
+        <div class="form-group">
+          <label for="icon">图标</label>
+          <input id="icon" class="form-control" name="icon" type="text" placeholder="图标">
+        </div>
+        <div class="form-group">
+          <button class="btn btn-primary" type="submit">添加</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+{{/block}}
+
+{{block 'js'}}
+
+<!-- 添加按钮上绑定点击事件 -->
+<script>
+  $('.btn').click(function () {
+    //获取表单数据
+    var str = $('form').serialize();
+    console.log(str) //name='3'&icon=123
+    // 发送ajax请求
+    $.ajax({
+      url: '/admin/cate/addCateDeal',
+      type: 'get',
+      data: str,
+      dataType: 'json',
+      success: function (msg) {
+        // console.log(msg)
+        // 不管添加成功或者失败，都要提示
+        alert(msg.message);
+        if (msg.code === 200) {
+          location.href = '/admin/cate/cate';
+        }
+      }
+    });
+  });
+</script>
+{{/block}}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <title>Comments &laquo; Admin</title>
+  <link rel="stylesheet" href="/assets/vendors/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="/assets/vendors/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="/assets/vendors/nprogress/nprogress.css">
+  <link rel="stylesheet" href="/assets/css/admin.css">
+  <script src="/assets/vendors/nprogress/nprogress.js"></script>
+  <style>
+    label.error {
+      color: red;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <script>NProgress.start()</script>
+
+  <div class="col-md-4">
+    <form>
+      <h2>添加新用户</h2>
+      <div class="form-group">
+        <label for="email">邮箱</label>
+        <input id="email" class="form-control" name="email" type="email" placeholder="邮箱">
+      </div>
+      <div class="form-group">
+        <label for="slug">昵称</label>
+        <input id="slug" class="form-control" name="nickname" type="text" placeholder="昵称">
+      </div>
+      <div class="form-group">
+        <label for="tel">手机</label>
+        <input id="tel" class="form-control" name="tel" type="text" placeholder="手机">
+      </div>
+      <div class="form-group">
+        <label for="age">年龄</label>
+        <input id="age" class="form-control" name="age" type="text" placeholder="年龄">
+      </div>
+      <div class="form-group">
+        <label for="sign">标志</label>
+        <input id="sign" class="form-control" name="sign" type="text" placeholder="标志">
+      </div>
+      <div class="form-group">
+        <label for="password">密码</label>
+        <input id="password" class="form-control" name="password" type="text" placeholder="密码">
+      </div>
+      <div class="form-group">
+        <label for="password2">确认密码</label>
+        <input id="password2" class="form-control" name="password2" type="text" placeholder="确认密码">
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary add" type="submit">添加</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="/assets/vendors/jquery/jquery.min.js"></script>
+  <script src="/assets/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="/assets/vendors/validation/dist/jquery.validate.min.js"></script>
+  <script>NProgress.done()</script>
+
+  <script>
+    // 1、给添加按钮添加点击事件
+    $('.add').click(function () {
+      $.ajax({
+        url: '/admin/user/adduserdeal',
+        data: $('form').serialize(), // 收集表单数据传给后端
+        type: 'get',
+        dataType: 'json',
+        success: function (msg) {
+          console.log(msg);
+          alert(msg.message);
+          // 如果添加成功,则关闭弹出层,列表页要显示出添加的新数据
+          // 当前页面并且没有引入layer.js, parent是user.html
+          // users.html页面中引入了layer.js,所以就有layer对象
+          // parent.layer:意思就是调用users.html页面中的layer对象
+          if (msg.code === 200) {
+            var index = parent.layer.getFrameIndex(window.name);
+            parent.layer.close(index);
+            //重载父页面(刷新)
+            parent.location.reload();
+          }
+        }
+      });
+    });
+
+    // 2.调用validate函数验证表单
+    $('form').validate({
+      // 配置验证规则
+      rules: {
+        //配置用户名的验证规则
+        email: {
+          require: true, //必填项
+          maxlength: 16,   //最长输入16位字符
+          minlength: 6,    //最短输入6位字符
+          emial: true
+        },
+        tel: {
+          required: true,
+          digits: true,
+          rangelength: [11, 11]
+        },
+        
+        password: {
+          required: true,
+          digits: true,
+          rangelength: [6, 12] // 6到12位之间
+        },
+        password2: {
+          //验证两个字段的值一样
+          equalTo: $('#password')
+        }
+      }, 
+      //配置未通过验证时的提示信息
+      messages: {
+        email: {
+          requied: '用户名必须填写',
+          maxlength: '用户名最长不能超过16位',
+          minlength: '用户名最短不能少于6位',
+          email: '请输入正确的邮箱地址'
+        },
+        tel: {
+          requird: '手机号不能未空',
+          digits: '手机号必须是数字',
+          rangelength: '手机号必须十一位'
+        },
+        password: {
+          requird: '密码不能位空',
+          digits: '密码必须是纯数字',
+          rangelength: '密码必须是6-12位之间'
+        },
+        password2: {
+          equalTo: '两次密码不一致'
+        }
+      },
+      //配置提交按钮事件
+      //该事件只有全通过验证后才会触发
+      submitHandler: function () { 
+        alert('ok');
+       }
+    });
+  </script>
+</body>
+
+</html>

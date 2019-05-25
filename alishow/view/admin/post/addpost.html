@@ -1,0 +1,136 @@
+{{extend '../layouts/layout.html'}}
+{{block 'css'}}
+<link rel="stylesheet" href="/assets/vendors/umeditor//themes/default/css/umeditor.css">
+{{/block}}
+{{block 'body'}}
+<div class="container-fluid">
+  <div class="page-title">
+    <h1>写文章</h1>
+  </div>
+  <!-- 有错误信息时展示 -->
+  <!-- <div class="alert alert-danger">
+    <strong>错误！</strong>发生XXX错误
+  </div> -->
+  <form class="row">
+    <div class="col-md-9">
+      <div class="form-group">
+        <label for="title">标题</label>
+        <input id="title" class="form-control input-lg" name="title" type="text" placeholder="文章标题">
+      </div>
+      <div class="form-group">
+        <label for="desc">简介</label>
+        <textarea id="desc" class="form-control input-lg" name="desc" placeholder="简介"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="content">内容</label>
+        <textarea id="content" class="form-control input-lg" name="content" cols="30" rows="10"
+          placeholder="内容"></textarea>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label for="feature">封面图片</label>
+        <!-- show when image chose -->
+        <img class="help-block thumbnail" style="display: none">
+        <input type="hidden" name="pic" id="feature_hidden">
+        <input id="feature" class="form-control" name="feature" type="file">
+      </div>
+      <div class="form-group">
+        <label for="category">所属栏目</label>
+        <select id="category" class="form-control" name="category">
+
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="status">状态</label>
+        <select id="status" class="form-control" name="status">
+          <option value="草稿">草稿</option>
+          <option value="已发布">已发布</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary" type="button" id="save">保存</button>
+      </div>
+    </div>
+  </form>
+</div>
+{{/block}}
+
+{{block 'js'}}
+<script src="/assets/vendors/umeditor/umeditor.config.js" charset="utf-8"></script>
+<script src="/assets/vendors/umeditor/umeditor.min.js" charset="utf-8"></script>
+<script src="/assets/vendors/umeditor/lang/zh-cn/zh-cn.js"></script>
+<script src="/assets/vendors/art-template/template-web.js"></script>
+
+<script type="text/html" id="tpl">
+  {#each data value#}
+  <option value="{#value.cate_id#}">{#value.cate_name#}</option>
+  {#/each#}
+</script>
+<script>
+  // 修改模板的边界
+  template.defaults.rules[1].test = /{#([@#]?)[ \t]*(\/?)([\w\W]*?)[ \t]*#}/;
+  // 实例化编辑器
+  var um = UM.getEditor('content', {
+    initialFrameWidth: '100%',   //初始化编辑器宽度
+    initialFrameHeight: 260,  //初始化编辑器高度      
+  });
+
+  // 分类下拉菜单发送ajax请求
+  $.ajax({
+    url: ' /api/cate/getCate',
+    type: 'post',
+    dataType: 'json',
+    success: function (msg) {
+      console.log(msg);
+      // 将后端返回的数据通过模板引擎渲染到下拉列表中
+      $('#category').html(template('tpl', msg));
+    }
+  })
+  // <!-- 封面图片要使用ajax文件上传 -->
+  // <!-- 获取文件对象---FormData -->
+  // 发送ajax请求，并将文件对象一起发送给后端
+  $('#feature').change(function () {
+    console.log($(this)[0].files[0])
+    const fileObj = $(this)[0].files[0];
+    // 2.实例化FormData对象，并且将dom对象追加到FormData对象中
+    const fd = new FormData();
+    fd.append('avatar', fileObj);
+    // 3.发送ajax请求
+    $.ajax({
+      url: '/api/uploads',
+      type: 'post',
+      data: fd,
+      contentType: false,
+      processData: false,
+      dataType: 'json',
+      success: function (msg) {
+        // console.log(msg);
+        // 上传成功提示用户
+        // alert(msg.message);
+        // 将后端返回来的图片路径赋值给img,并且显示
+        $('.thumbnail').attr('src', msg.path).show();
+        // 将上传好的图片地址写入隐藏域
+        $('#feature_hidden').val(msg.path);
+      }
+    });
+  });
+  //  保存按钮点击事件,获取表单数据,并且发送ajax请求
+  $('#save').click(function () {
+    $.ajax({
+      url: '/api/post/addpost',
+      type: 'post',
+      data: $('form').serialize(),
+      dataType: 'json',
+      success: function (msg) { 
+        alert(msg.message);
+        // 跳转到文章栏目页
+        location.href = '/admin/post/posts';
+       }
+    });
+  });
+</script>
+
+
+
+{{/block}}

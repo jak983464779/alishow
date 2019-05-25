@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <title>Comments &laquo; Admin</title>
+    <link rel="stylesheet" href="/assets/vendors/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/assets/vendors/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="/assets/vendors/nprogress/nprogress.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <script src="/assets/vendors/nprogress/nprogress.js"></script>
+    <style>
+        label.error {
+            color: red;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <script>NProgress.start()</script>
+
+    <div class="col-md-4">
+        <form>
+            <h2>修改用户信息</h2>
+            <input type="hidden" value="{{admin_id}}" id="id" name="id">
+            <div class="form-group">
+                <label for="email">邮箱</label>
+                <input id="email" class="form-control" name="email" type="email" value="{{admin_email}}">
+            </div>
+            <div class="form-group">
+                <label for="nickname">昵称</label>
+                <input id="nickname" class="form-control" name="nickname" type="text" value="{{admin_nickname}}">
+            </div>
+            <div class="form-group">
+                <label for="tel">手机</label>
+                <input id="tel" class="form-control" name="tel" type="text" value="{{admin_tel}}">
+            </div>
+            <div class="form-group">
+                <label for="age">年龄</label>
+                <input id="age" class="form-control" name="age" type="text" value="{{admin_age}}">
+            </div>
+            <div class="form-group">
+                <label for="gender">性别</label>
+                {{if admin_gender === '男'}}
+                <input id="gender" name="gender" type="radio" value="男" checked>男
+                <input id="gender" name="gender" type="radio" value="女">女
+                {{else}}
+                <input id="gender" name="gender" type="radio" value="男">男
+                <input id="gender" name="gender" type="radio" value="女" checked>女
+                {{/if}}
+            </div>
+            <div class="form-group">
+                <label for="sign">座右铭</label>
+                <input id="sign" class="form-control" name="sign" type="text" value="{{admin_sign}}">
+            </div>
+            <div class="form-group">
+                <label for="state">状态</label>
+                {{if admin_state === "激活"}}
+                <input id="state" name="state" type="radio" value="激活" checked>激活
+                <input id="state" name="state" type="radio" value="禁用">禁用
+                {{else}}
+                <input id="state" name="state" type="radio" value="激活">激活
+                <input id="state" name="state" type="radio" value="禁用" checked>禁用
+                {{/if}}
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary add" id="editBtn" type="button">修改</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="/assets/vendors/jquery/jquery.min.js"></script>
+    <script src="/assets/vendors/bootstrap/js/bootstrap.js"></script>
+    <script src="../../assets/vendors/validation/dist/jquery.validate.min.js"></script>
+    <script>NProgress.done()</script>
+
+    <script>
+        // 修改按钮添加点击事件
+       $('#editBtn').click(function () {
+        // 发送ajax请求
+        $.ajax({
+            url: '/admin/user/modifyuser',
+            type: 'get',
+            data: $('form').serialize(),
+            dataType: 'json',
+            success: function (msg) { 
+                console.log(msg);
+                if (msg.code === 200) {
+                    parent.layer.alert('修改成功', function () {
+                        parent.location.reload();
+                    });
+                } else {
+                    alert('修改失败')
+                }
+             }
+        })
+       })
+    </script>
+</body>
+
+</html>

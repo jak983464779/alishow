@@ -1,0 +1,102 @@
+{{extend '../layouts/layout.html'}}
+{{block 'body'}}
+<div class="container-fluid">
+  <div class="page-title">
+    <h1>分类目录</h1>
+  </div>
+  <!-- 有错误信息时展示 -->
+  <!-- <div class="alert alert-danger">
+        <strong>错误！</strong>发生XXX错误
+      </div> -->
+  <div class="row">
+
+    <div class="col-md-8">
+      <div class="page-action">
+        <!-- show when multiple checked -->
+        <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none">批量删除</a>
+      </div>
+      <table class="table table-striped table-bordered table-hover">
+        <thead>
+          <tr>
+            <th class="text-center" width="40"><input type="checkbox"></th>
+            <th>栏目名称</th>
+            <th>栏目图标</th>
+            <th>创建时间</th>
+            <th class="text-center" width="100">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{{/block}}
+
+{{block 'js'}}
+<script type="text/javascript" src="/assets/vendors/art-template/template-web.js"></script>
+<script type="text/html" id="tpl">
+  {#each data value#}
+  <tr>
+    <td class="text-center"><input type="checkbox"></td>
+    <td>{#value.cate_name#}</td>
+    <td>{#value.cate_icon#}</td>
+    <td>{#value.cate_addtime#}</td>
+    <td class="text-center">
+      <a href="/admin/cate/editcate?id={#value.cate_id#}" class="btn edit btn-info btn-xs" >编辑</a>
+      <a href="javascript:;" data="{#value.cate_id#}" class="del btn btn-danger btn-xs">删除</a>
+    </td>
+  </tr>
+  {#/each#}
+</script>
+<script>
+  // 修改模板的边界
+  template.defaults.rules[1].test = /{#([@#]?)[ \t]*(\/?)([\w\W]*?)[ \t]*#}/;
+  // 查询用户信息
+  $.ajax({
+    url: '/admin/cate/getCate',
+    type: 'get',
+    cache: false,
+    dataType: 'json',
+    success: function (msg) {
+      if (msg.code === 201) {
+        // 当code等于201的时候，查询失败，直接显示失败信息即可
+        alert(msg.message);
+      } else {
+        // 当code等于200的时候，查询成功，将查询结果显示到页面上
+        var tbodyStr = template('tpl', msg);
+        $('tbody').html(tbodyStr);
+      }
+    }
+  });
+
+  // 删除相对应的数据
+  $('tbody').on('click', '.del', function () {
+    // 首先询问用户是否删除该用户
+    if (!confirm('你确定删除该用户信息吗？')) {
+      return false;
+    } 
+    var cate_id = $(this).attr('data');
+    var _this = $(this);
+    // console.log(cate_id)
+    $.ajax({
+      url: '/admin/cate/delcate',
+      data: {id: cate_id},
+      type: 'get',
+      dataType: 'json',
+      success: function (msg) {
+        console.log(msg);
+        // alert(msg.message);
+        if (msg.code === 200) {
+          // 如果删除成功，则使用dom操作删除对应的行
+          _this.parent().parent().remove();
+        }
+      }
+    });
+  })
+
+ 
+</script>
+{{/block}}

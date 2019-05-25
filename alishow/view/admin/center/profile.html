@@ -1,0 +1,99 @@
+{{extend '../layouts/layout.html'}}
+{{block 'body'}}
+<div class="container-fluid">
+  <div class="page-title">
+    <h1>我的个人资料</h1>
+  </div>
+  <!-- 有错误信息时展示 -->
+  <!-- <div class="alert alert-danger">
+      <strong>错误！</strong>发生XXX错误
+    </div> -->
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-3 control-label">头像</label>
+      <div class="col-sm-6">
+        <label class="form-image">
+          <input id="avatar" type="file">
+          <input type="hidden" id="avatat_hidden" name="pic">
+          <img id="pic" src="{{admin_pic}}">
+          <i class="mask fa fa-upload"></i>
+        </label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="email" class="col-sm-3 control-label">邮箱</label>
+      <div class="col-sm-6">
+        <input id="email" class="form-control" name="email" type="type" value="{{admin_email}}" placeholder="邮箱">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="nickname" class="col-sm-3 control-label">昵称</label>
+      <div class="col-sm-6">
+        <input id="nickname" class="form-control" name="nickname" type="type" value="{{admin_nickname}}"
+          placeholder="昵称">
+        <p class="help-block">限制在 3-16 个字符</p>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="bio" class="col-sm-3 control-label">简介</label>
+      <div class="col-sm-6">
+        <textarea id="bio" class="form-control" placeholder="Bio" cols="30" name="sign"
+          rows="6">{{admin_sign}}</textarea>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-6">
+        <button type="button" class="btn btn-primary" id="updateBtn">更新</button>
+        <a class="btn btn-link" href="/admin/center/password-reset">修改密码</a>
+      </div>
+    </div>
+  </form>
+</div>
+{{/block}}
+
+{{block 'js'}}
+
+<script>
+  // 1、在头像域中注册onchange事件
+  $('#avatar').change(function () {
+    // 2、获取要上传的文件对象，再追加到FromData中
+    var file_obj = document.getElementById('avatar').files[0];
+    // 3、调用formdata对象中的append方法，将文件对象追加到fromdata对象中
+    var fd = new FormData();
+    // 此处的参数1：按照端口的提示的参数名填写
+    fd.append('avatar', file_obj);
+
+    // 4、发送ajax请求
+    $.ajax({
+      url: '/api/uploads',
+      data: fd,
+      type: 'post',
+      dataType: 'json',
+      // 发送数据是FormData时，必须设置contentType和processData
+      contentType: false,
+      processData: false,
+      success: function (msg) {
+        alert(msg.message);
+        //将上传好的图片地址更新到img标签中
+        $('#pic').attr('src', msg.path);
+        // 将上传好的图片地址更新到隐藏域中
+        $('#avatat_hidden').val(msg.path);
+      }
+    });
+  })
+  // 1、再更新按钮上注册点击事件
+  $('#updateBtn').click(function () {
+    // 2、获取表单数据,发送ajax请求
+    $.ajax({
+      url: ' /api/center/personal',
+      type: 'post',
+      dataType: 'json',
+      data: $('form').serialize(),
+      success: function (msg) {
+        alert(msg.message);
+      }
+    });
+  });
+</script>
+
+{{/block}}

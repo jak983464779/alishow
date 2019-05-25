@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="/assets/vendors/umeditor//themes/default/css/umeditor.css">
+    <script src="/assets/vendors/umeditor/third-party/jquery.min.js"></script>
+    <script src="/assets/vendors/umeditor/umeditor.config.js" charset="utf-8"></script>
+    <script src="/assets/vendors/umeditor/umeditor.min.js" charset="utf-8"></script>
+    <script src="/assets/vendors/umeditor/lang/zh-cn/zh-cn.js"></script>
+</head>
+<body>
+    <h1>ueditor使用测试</h1>
+    <textarea id="content" style="width: 1000px; height: 240px;"></textarea>
+    <script>
+        // 实例化编辑器
+        var um = UM.getEditor('content', {
+            initialFrameWidth: 800,   //初始化编辑器宽度
+            initialFrameHeight: 300,  //初始化编辑器高度
+            isShow: true,          
+            initialContent: 'ueditor富文本编辑器使用测试',
+            fontsize: [10, 16, 36, 48] 
+        });
+    </script>
+</body>
+</html>
